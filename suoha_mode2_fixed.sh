@@ -2,7 +2,7 @@
 # suoha mode=2 stable installer
 # Xray + Cloudflare Tunnel service mode
 # Tested syntax: bash -n
-# Usage: bash suoha_mode2_fixed.sh
+# Usage: bash suoha_mode2_fixed_v3.sh
 
 set -Eeuo pipefail
 
@@ -327,7 +327,7 @@ ingress:
   - service: http_status:404
 EOF
 
-  "$CLOUDFLARED_BIN" tunnel ingress validate "$CF_CONFIG" >/dev/null 2>&1 || die "cloudflared 配置校验失败：$CF_CONFIG"
+  "$CLOUDFLARED_BIN" --config "$CF_CONFIG" tunnel ingress validate || die "cloudflared 配置校验失败：$CF_CONFIG"
 }
 
 make_env_file() {
@@ -443,7 +443,7 @@ Requires=suoha-xray.service
 
 [Service]
 Type=simple
-ExecStart=$CLOUDFLARED_BIN --edge-ip-version $EDGE_IP_VERSION --protocol http2 tunnel --config $CF_CONFIG run
+ExecStart=$CLOUDFLARED_BIN --config $CF_CONFIG tunnel --edge-ip-version $EDGE_IP_VERSION --protocol http2 run
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=1048576
@@ -484,7 +484,7 @@ EOF
 name="suoha-cloudflared"
 description="Suoha Cloudflare Tunnel"
 command="$CLOUDFLARED_BIN"
-command_args="--edge-ip-version $EDGE_IP_VERSION --protocol http2 tunnel --config $CF_CONFIG run"
+command_args="--config $CF_CONFIG tunnel --edge-ip-version $EDGE_IP_VERSION --protocol http2 run"
 command_background="yes"
 pidfile="/run/\${RC_SVCNAME}.pid"
 
