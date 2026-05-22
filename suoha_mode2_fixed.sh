@@ -275,7 +275,8 @@ cloudflared_login_if_needed() {
 
   if [ ! -f /root/.cloudflared/cert.pem ]; then
     say ""
-    warn "接下来会显示 Cloudflare 授权链接。复制链接到浏览器打开，选择域名授权。"
+    warn "接下来会显示 Cloudflare 授权链接。复制链接到浏览器打开，登录后选择你的域名授权。"
+    warn "授权完成后回到终端，脚本会继续往下走。"
     "$CLOUDFLARED_BIN" tunnel login
   else
     ok "检测到 /root/.cloudflared/cert.pem，跳过 Cloudflare 登录"
@@ -460,6 +461,10 @@ install_services_openrc() {
   command -v rc-update >/dev/null 2>&1 || die "没有 rc-update，OpenRC 不可用"
   command -v rc-service >/dev/null 2>&1 || die "没有 rc-service，OpenRC 不可用"
 
+  # 某些极简 Alpine 容器/小鸡里 OpenRC 已安装但当前会话没有初始化，补一下运行目录。
+  mkdir -p /run/openrc
+  touch /run/openrc/softlevel
+
   cat >"$OPENRC_XRAY" <<EOF
 #!/sbin/openrc-run
 name="suoha-xray"
@@ -641,12 +646,14 @@ install_mode2() {
 
   choose_protocol
   choose_ip_version
+
+  # 先下载 cloudflared，再登录 Cloudflare。这样流程更接近原脚本：先弹登录链接，授权后再填写要绑定的域名。
+  download_bins
+  cloudflared_login_if_needed
+
   choose_domain
   choose_client_addr
-
-  download_bins
   make_xray_config
-  cloudflared_login_if_needed
   create_cloudflare_tunnel
   make_cloudflared_config
   make_env_file
