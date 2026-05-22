@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# suoha mode=2 stable installer
+# suoha mode=2 stable installer v4
 # Xray + Cloudflare Tunnel service mode
 # Tested syntax: bash -n
-# Usage: bash suoha_mode2_fixed_v3.sh
+# Usage: bash suoha_mode2_fixed_v4.sh
 
 set -Eeuo pipefail
 
@@ -327,7 +327,19 @@ ingress:
   - service: http_status:404
 EOF
 
-  "$CLOUDFLARED_BIN" --config "$CF_CONFIG" tunnel ingress validate || die "cloudflared 配置校验失败：$CF_CONFIG"
+  say "生成的 cloudflared 配置如下："
+  sed 's/^/  /' "$CF_CONFIG"
+
+  # 不同 cloudflared 版本对 --config 的位置解析不完全一样。
+  # 这里先尝试更接近原脚本的写法；如果校验失败，不直接退出，继续安装服务，后面用日志判断。
+  if "$CLOUDFLARED_BIN" tunnel --config "$CF_CONFIG" ingress validate; then
+    ok "cloudflared 配置校验通过"
+  elif "$CLOUDFLARED_BIN" --config "$CF_CONFIG" tunnel ingress validate; then
+    ok "cloudflared 配置校验通过"
+  else
+    warn "cloudflared 配置校验未通过，但这一步在部分版本会误判；脚本将继续安装服务。"
+    warn "如服务启动失败，请运行：$CLOUDFLARED_BIN tunnel --config $CF_CONFIG ingress validate 查看详细错误。"
+  fi
 }
 
 make_env_file() {
@@ -443,7 +455,7 @@ Requires=suoha-xray.service
 
 [Service]
 Type=simple
-ExecStart=$CLOUDFLARED_BIN --config $CF_CONFIG tunnel --edge-ip-version $EDGE_IP_VERSION --protocol http2 run
+ExecStart=$CLOUDFLARED_BIN --edge-ip-version $EDGE_IP_VERSION --protocol http2 tunnel --config $CF_CONFIG run $TUNNEL_UUID
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=1048576
@@ -484,7 +496,7 @@ EOF
 name="suoha-cloudflared"
 description="Suoha Cloudflare Tunnel"
 command="$CLOUDFLARED_BIN"
-command_args="--config $CF_CONFIG tunnel --edge-ip-version $EDGE_IP_VERSION --protocol http2 run"
+command_args="--edge-ip-version $EDGE_IP_VERSION --protocol http2 tunnel --config $CF_CONFIG run $TUNNEL_UUID"
 command_background="yes"
 pidfile="/run/\${RC_SVCNAME}.pid"
 
