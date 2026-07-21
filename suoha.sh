@@ -174,28 +174,28 @@ done
 clear
 if [ $protocol == 1 ]
 then
-	echo -e vmess链接已经生成, cloudflare.182682.xyz 可替换为CF优选IP'\n' > v2ray.txt
+	echo -e vmess链接已经生成, 104.18.48.44:443 可替换为CF优选IP'\n' > v2ray.txt
 	if [ $(grep -i PRETTY_NAME /etc/os-release | cut -d \" -f2 | awk '{print $1}') == "Alpine" ]
 	then
-		echo 'vmess://'$(echo '{"add":"cloudflare.182682.xyz","aid":"0","host":"'$argo'","id":"'$uuid'","net":"ws","path":"'$urlpath'","port":"443","ps":"'$(echo $isp | sed -e 's/_/ /g')'_tls","tls":"tls","type":"none","v":"2"}' | base64 | awk '{ORS=(NR%76==0?RS:"");}1') >> v2ray.txt
+		echo 'vmess://'$(echo '{"add":"104.18.48.44:443","aid":"0","host":"'$argo'","id":"'$uuid'","net":"ws","path":"'$urlpath'","port":"443","ps":"'$(echo $isp | sed -e 's/_/ /g')'_tls","tls":"tls","type":"none","v":"2"}' | base64 | awk '{ORS=(NR%76==0?RS:"");}1') >> v2ray.txt
 	else
-		echo 'vmess://'$(echo '{"add":"cloudflare.182682.xyz","aid":"0","host":"'$argo'","id":"'$uuid'","net":"ws","path":"'$urlpath'","port":"443","ps":"'$(echo $isp | sed -e 's/_/ /g')'_tls","tls":"tls","type":"none","v":"2"}' | base64 -w 0) >> v2ray.txt
+		echo 'vmess://'$(echo '{"add":"104.18.48.44:443","aid":"0","host":"'$argo'","id":"'$uuid'","net":"ws","path":"'$urlpath'","port":"443","ps":"'$(echo $isp | sed -e 's/_/ /g')'_tls","tls":"tls","type":"none","v":"2"}' | base64 -w 0) >> v2ray.txt
 	fi
 	echo -e '\n'端口 443 可改为 2053 2083 2087 2096 8443'\n' >> v2ray.txt
 	if [ $(grep -i PRETTY_NAME /etc/os-release | cut -d \" -f2 | awk '{print $1}') == "Alpine" ]
 	then
-		echo 'vmess://'$(echo '{"add":"cloudflare.182682.xyz","aid":"0","host":"'$argo'","id":"'$uuid'","net":"ws","path":"'$urlpath'","port":"80","ps":"'$(echo $isp | sed -e 's/_/ /g')'","tls":"","type":"none","v":"2"}' | base64 | awk '{ORS=(NR%76==0?RS:"");}1') >> v2ray.txt
+		echo 'vmess://'$(echo '{"add":"104.18.48.44:443","aid":"0","host":"'$argo'","id":"'$uuid'","net":"ws","path":"'$urlpath'","port":"80","ps":"'$(echo $isp | sed -e 's/_/ /g')'","tls":"","type":"none","v":"2"}' | base64 | awk '{ORS=(NR%76==0?RS:"");}1') >> v2ray.txt
 	else
-		echo 'vmess://'$(echo '{"add":"cloudflare.182682.xyz","aid":"0","host":"'$argo'","id":"'$uuid'","net":"ws","path":"'$urlpath'","port":"80","ps":"'$(echo $isp | sed -e 's/_/ /g')'","tls":"","type":"none","v":"2"}' | base64 -w 0) >> v2ray.txt
+		echo 'vmess://'$(echo '{"add":"104.18.48.44:443","aid":"0","host":"'$argo'","id":"'$uuid'","net":"ws","path":"'$urlpath'","port":"80","ps":"'$(echo $isp | sed -e 's/_/ /g')'","tls":"","type":"none","v":"2"}' | base64 -w 0) >> v2ray.txt
 	fi
 	echo -e '\n'端口 80 可改为 8080 8880 2052 2082 2086 2095 >> v2ray.txt
 fi
 if [ $protocol == 2 ]
 then
-	echo -e vless链接已经生成, cloudflare.182682.xyz 可替换为CF优选IP'\n' > v2ray.txt
-	echo 'vless://'$uuid'@cloudflare.182682.xyz:443?encryption=none&security=tls&type=ws&host='$argo'&path='$urlpath'#'$(echo $isp | sed -e 's/_/%20/g' -e 's/,/%2C/g')'_tls' >> v2ray.txt
+	echo -e vless链接已经生成, 104.18.48.44:443 可替换为CF优选IP'\n' > v2ray.txt
+	echo 'vless://'$uuid'@104.18.48.44:443:443?encryption=none&security=tls&type=ws&host='$argo'&path='$urlpath'#'$(echo $isp | sed -e 's/_/%20/g' -e 's/,/%2C/g')'_tls' >> v2ray.txt
 	echo -e '\n'端口 443 可改为 2053 2083 2087 2096 8443'\n' >> v2ray.txt
-	echo 'vless://'$uuid'@cloudflare.182682.xyz:80?encryption=none&security=none&type=ws&host='$argo'&path='$urlpath'#'$(echo $isp | sed -e 's/_/%20/g' -e 's/,/%2C/g')'' >> v2ray.txt
+	echo 'vless://'$uuid'@104.18.48.44:443:80?encryption=none&security=none&type=ws&host='$argo'&path='$urlpath'#'$(echo $isp | sed -e 's/_/%20/g' -e 's/,/%2C/g')'' >> v2ray.txt
 	echo -e '\n'端口 80 可改为 8080 8880 2052 2082 2086 2095 >> v2ray.txt
 fi
 rm -rf argo.log
@@ -356,10 +356,10 @@ echo $domain 绑定成功
 tunneluuid=$(cut -d= -f2 argo.log)
 if [ $protocol == 1 ]
 then
-	echo -e vmess链接已经生成, cloudflare.182682.xyz 可替换为CF优选IP'\n' >/opt/suoha/v2ray.txt
-	echo 'vmess://'$(echo '{"add":"cloudflare.182682.xyz","aid":"0","host":"'$domain'","id":"'$uuid'","net":"ws","path":"'$urlpath'","port":"443","ps":"'$(echo $isp | sed -e 's/_/ /g')'","tls":"tls","type":"none","v":"2"}' | base64 -w 0) >>/opt/suoha/v2ray.txt
+	echo -e vmess链接已经生成, 104.18.48.44:443 可替换为CF优选IP'\n' >/opt/suoha/v2ray.txt
+	echo 'vmess://'$(echo '{"add":"104.18.48.44:443","aid":"0","host":"'$domain'","id":"'$uuid'","net":"ws","path":"'$urlpath'","port":"443","ps":"'$(echo $isp | sed -e 's/_/ /g')'","tls":"tls","type":"none","v":"2"}' | base64 -w 0) >>/opt/suoha/v2ray.txt
 	echo -e '\n'端口 443 可改为 2053 2083 2087 2096 8443'\n' >>/opt/suoha/v2ray.txt
-	echo 'vmess://'$(echo '{"add":"cloudflare.182682.xyz","aid":"0","host":"'$domain'","id":"'$uuid'","net":"ws","path":"'$urlpath'","port":"80","ps":"'$(echo $isp | sed -e 's/_/ /g')'","tls":"","type":"none","v":"2"}' | base64 -w 0) >>/opt/suoha/v2ray.txt
+	echo 'vmess://'$(echo '{"add":"104.18.48.44:443","aid":"0","host":"'$domain'","id":"'$uuid'","net":"ws","path":"'$urlpath'","port":"80","ps":"'$(echo $isp | sed -e 's/_/ /g')'","tls":"","type":"none","v":"2"}' | base64 -w 0) >>/opt/suoha/v2ray.txt
 	echo -e '\n'端口 80 可改为 8080 8880 2052 2082 2086 2095'\n' >>/opt/suoha/v2ray.txt
 	echo 注意:如果 80 8080 8880 2052 2082 2086 2095 端口无法正常使用 >>/opt/suoha/v2ray.txt
 	echo 请前往 https://dash.cloudflare.com/ >>/opt/suoha/v2ray.txt
@@ -367,10 +367,10 @@ then
 fi
 if [ $protocol == 2 ]
 then
-	echo -e vless链接已经生成, cloudflare.182682.xyz 可替换为CF优选IP'\n' >/opt/suoha/v2ray.txt
-	echo 'vless://'$uuid'@cloudflare.182682.xyz:443?encryption=none&security=tls&type=ws&host='$domain'&path='$urlpath'#'$(echo $isp | sed -e 's/_/%20/g' -e 's/,/%2C/g')'_tls' >>/opt/suoha/v2ray.txt
+	echo -e vless链接已经生成, 104.18.48.44:443 可替换为CF优选IP'\n' >/opt/suoha/v2ray.txt
+	echo 'vless://'$uuid'@104.18.48.44:443:443?encryption=none&security=tls&type=ws&host='$domain'&path='$urlpath'#'$(echo $isp | sed -e 's/_/%20/g' -e 's/,/%2C/g')'_tls' >>/opt/suoha/v2ray.txt
 	echo -e '\n'端口 443 可改为 2053 2083 2087 2096 8443'\n' >>/opt/suoha/v2ray.txt
-	echo 'vless://'$uuid'@cloudflare.182682.xyz:80?encryption=none&security=none&type=ws&host='$domain'&path='$urlpath'#'$(echo $isp | sed -e 's/_/%20/g' -e 's/,/%2C/g')'' >>/opt/suoha/v2ray.txt
+	echo 'vless://'$uuid'@104.18.48.44:443:80?encryption=none&security=none&type=ws&host='$domain'&path='$urlpath'#'$(echo $isp | sed -e 's/_/%20/g' -e 's/,/%2C/g')'' >>/opt/suoha/v2ray.txt
 	echo -e '\n'端口 80 可改为 8080 8880 2052 2082 2086 2095'\n' >>/opt/suoha/v2ray.txt
 	echo 注意:如果 80 8080 8880 2052 2082 2086 2095 端口无法正常使用 >>/opt/suoha/v2ray.txt
 	echo 请前往 https://dash.cloudflare.com/ >>/opt/suoha/v2ray.txt
